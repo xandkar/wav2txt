@@ -1,0 +1,56 @@
+#! /bin/bash
+
+set -e
+
+main() {
+    local -r data_dir='./data'
+    local -r models_dir="$data_dir"/models
+    local -r audio_dir="$data_dir"/audio
+
+    local -r model='base.en'
+    local -r model_file="ggml-${model}.bin"
+    local -r model_file_path="$models_dir/$model_file"
+    local -r model_url_src="https://huggingface.co/ggerganov/whisper.cpp"
+    local -r model_url_pfx="resolve/main/ggml"
+    local -r model_url="$model_url_src"/"$model_url_pfx"-"$model".bin
+
+    local -r audio_file_path_orig="$audio_dir/audio.orig.wav"
+    local -r audio_file_path_norm="$audio_dir/audio.16bit16khz.wav"
+
+    local -r yt_url='https://youtu.be/CQbkhYg2DzM'
+
+    # Download the model:
+    mkdir -p "$models_dir"
+    wget \
+        --continue \
+        --no-config \
+        --quiet \
+        --show-progress \
+        -O "$model_file_path" \
+        "$model_url"
+
+    # Download sample audio:
+    mkdir -p "$audio_dir"
+    youtube-dl \
+        --continue \
+        --extract-audio \
+        --audio-format wav \
+        --audio-quality 16K \
+        -o "$audio_file_path_orig" \
+        "$yt_url"
+
+    # Normalilze sample audio to the supported format:
+    ffmpeg \
+        -y \
+        -i "$audio_file_path_orig" \
+        -ar 16000 \
+        -acodec pcm_s16le \
+        "$audio_file_path_norm"
+
+    # Convert audio to text:
+    cargo run -- \
+        --model "$model_file_path" \
+        --audio "$audio_file_path_norm"
+}
+
+main "$@"
