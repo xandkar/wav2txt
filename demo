@@ -39,8 +39,8 @@ main() {
 
     # Convert audio to text:
     cargo run -- \
-        --model "$model_file_path" \
-        --audio "$audio_file_path" \
+        --in-model "$model_file_path" \
+        --in-audio "$audio_file_path" \
         --normalize  # Attempt to normalize the input to the supported format.
 }
 
