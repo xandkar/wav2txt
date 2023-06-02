@@ -22,6 +22,7 @@ main() {
     local -r input_file_path="$1"
     local -r output_file_path="$2"
 
+    # XXX Arg order matters!
     ffmpeg \
         "$FFMPEG_OPT_OVERWRITE_EXISTING_OUTPUT_FILE" \
         -i "$input_file_path" \
