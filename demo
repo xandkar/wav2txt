@@ -6,6 +6,7 @@ main() {
     local -r data_dir='./data'
     local -r models_dir="$data_dir"/models
     local -r audio_dir="$data_dir"/audio
+    local -r audio_file_path="$audio_dir/audio.wav"
 
     local -r model='base.en'
     local -r model_file="ggml-${model}.bin"
@@ -13,9 +14,6 @@ main() {
     local -r model_url_src="https://huggingface.co/ggerganov/whisper.cpp"
     local -r model_url_pfx="resolve/main/ggml"
     local -r model_url="$model_url_src"/"$model_url_pfx"-"$model".bin
-
-    local -r audio_file_path_orig="$audio_dir/audio.orig.wav"
-    local -r audio_file_path_norm="$audio_dir/audio.16bit16khz.wav"
 
     local -r yt_url='https://youtu.be/CQbkhYg2DzM'
 
@@ -36,16 +34,14 @@ main() {
         --extract-audio \
         --audio-format wav \
         --audio-quality 16K \
-        -o "$audio_file_path_orig" \
+        -o "$audio_file_path" \
         "$yt_url"
-
-    # Normalilze sample audio to the supported format:
-    ./normalize "$audio_file_path_orig" "$audio_file_path_norm"
 
     # Convert audio to text:
     cargo run -- \
         --model "$model_file_path" \
-        --audio "$audio_file_path_norm"
+        --audio "$audio_file_path" \
+        --normalize  # Attempt to normalize the input to the supported format.
 }
 
 main "$@"

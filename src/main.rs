@@ -13,6 +13,61 @@ struct Cli {
 
     #[clap(long, short)]
     text: Option<PathBuf>,
+
+    #[clap(long, short, default_value_t = false)]
+    normalize: bool,
+}
+
+pub fn exec(cmd: &str, args: &[&str]) -> Result<Vec<u8>> {
+    let out = std::process::Command::new(cmd).args(args).output()?;
+    if out.status.success() {
+        Ok(out.stdout)
+    } else {
+        dbg!(cmd);
+        dbg!(args);
+        eprintln!("{}", String::from_utf8(out.stderr.clone())?);
+        Err(anyhow!("Failure in '{} {:?}'. out: {:?}", cmd, args, out))
+    }
+}
+
+fn mktemp() -> Result<PathBuf> {
+    let out = exec("mktemp", &[])?;
+    let out = String::from_utf8(out)?;
+    let out = out.trim(); // Output contains a trailing LF.
+    Ok(PathBuf::from(out))
+}
+
+fn normalize(in_path: &Path) -> Result<PathBuf> {
+    let out_path = mktemp()?;
+
+    #[rustfmt::skip] // I mainly want each option-value pair on the same line.
+    exec(
+        "ffmpeg",
+        &[
+            // XXX Arg order matters!
+            "-y", // Overwrite output file without prompting.
+            "-i", in_path.as_os_str().to_str().ok_or_else(|| {
+                anyhow!(
+                    "Failed to convert input path to string: {:?}",
+                    &in_path
+                )
+            })?,
+            // Stream type "a", for "audio".
+            // See: https://ffmpeg.org/ffmpeg.html#Stream-specifiers-1
+            "-ar:a", "16000",        // 16KHz sampling frequency.
+            "-ac:a", "1",            // 1 audio channel.
+            "-codec:a", "pcm_s16le", // PCM signed 16-bit little-endian
+            "-f", "wav",             // WAV format.
+            out_path.as_os_str().to_str().ok_or_else(|| {
+                anyhow!(
+                    "Failed to convert output path to string: {:?}",
+                    &out_path
+                )
+            })?,
+        ],
+    )?;
+
+    Ok(out_path)
 }
 
 fn read_wav(path: &Path) -> Result<Vec<f32>> {
@@ -105,7 +160,12 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     dbg!(&cli);
 
-    let audio_data = read_wav(cli.audio.as_path())?;
+    let audio_file = if cli.normalize {
+        normalize(&cli.audio)?
+    } else {
+        cli.audio
+    };
+    let audio_data = read_wav(audio_file.as_path())?;
     let text_segments = segments(&audio_data, cli.model.as_path())?;
 
     let mut text_buf: Box<dyn std::io::Write> = match cli.text {
