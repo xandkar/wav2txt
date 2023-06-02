@@ -39,23 +39,8 @@ main() {
         -o "$audio_file_path_orig" \
         "$yt_url"
 
-    # https://ffmpeg.org/ffmpeg.html#Stream-specifiers-1
-    # "stream_type is one of following: ’v’ or ’V’ for video, ’a’ for audio,
-    # ’s’ for subtitle, ’d’ for data, and ’t’ for attachments."
-    local -r ffmpeg_stream_type='a'
-    local -r ffmpeg_codec='pcm_s16le'
-    local -r ffmpeg_audio_channels=1
-    local -r ffmpeg_audio_rate=16000 # sampling frequency
-    local -r ffmpeg_opt_overwrite_existing_output_file='-y'
-
     # Normalilze sample audio to the supported format:
-    ffmpeg \
-        "$ffmpeg_opt_overwrite_existing_output_file" \
-        -i "$audio_file_path_orig" \
-        -ar:"$ffmpeg_stream_type" "$ffmpeg_audio_rate" \
-        -ac:"$ffmpeg_stream_type" "$ffmpeg_audio_channels" \
-        -codec:"$ffmpeg_stream_type" "$ffmpeg_codec" \
-        "$audio_file_path_norm"
+    ./normalize "$audio_file_path_orig" "$audio_file_path_norm"
 
     # Convert audio to text:
     cargo run -- \

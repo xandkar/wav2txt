@@ -1,0 +1,35 @@
+#! /bin/bash
+### Normalilze an audio file to the supported format.
+
+set -e
+
+FFMPEG_AUDIO_CHANNELS=1
+FFMPEG_AUDIO_RATE=16000  # Sampling frequency in Hz.
+FFMPEG_CODEC='pcm_s16le' # PCM signed 16-bit little-endian
+FFMPEG_OPT_OVERWRITE_EXISTING_OUTPUT_FILE='-y'
+FFMPEG_OUTPUT_FILE_FORMAT='wav'
+
+## https://ffmpeg.org/ffmpeg.html#Stream-specifiers-1
+## stream_type :=
+##   | v | V # video
+##   | a     # audio
+##   | s     # subtitle
+##   | d     # data
+##   | t     # attachments
+FFMPEG_STREAM_TYPE='a'
+
+main() {
+    local -r input_file_path="$1"
+    local -r output_file_path="$2"
+
+    ffmpeg \
+        "$FFMPEG_OPT_OVERWRITE_EXISTING_OUTPUT_FILE" \
+        -i "$input_file_path" \
+        -ar:"$FFMPEG_STREAM_TYPE" "$FFMPEG_AUDIO_RATE" \
+        -ac:"$FFMPEG_STREAM_TYPE" "$FFMPEG_AUDIO_CHANNELS" \
+        -codec:"$FFMPEG_STREAM_TYPE" "$FFMPEG_CODEC" \
+        -f "$FFMPEG_OUTPUT_FILE_FORMAT" \
+        "$output_file_path"
+}
+
+main "$@"
