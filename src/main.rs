@@ -5,14 +5,14 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 struct Cli {
-    #[clap(long, short)]
-    model: PathBuf,
+    #[clap(long = "in-model", short = 'm')]
+    model_file: PathBuf,
 
-    #[clap(long, short)]
-    audio: PathBuf,
+    #[clap(long = "in-audio", short = 'a')]
+    audio_file: PathBuf,
 
-    #[clap(long, short)]
-    text: Option<PathBuf>,
+    #[clap(long = "out-text", short = 'o')]
+    text_file: Option<PathBuf>,
 
     #[clap(long, short, default_value_t = false)]
     normalize: bool,
@@ -161,14 +161,14 @@ fn main() -> Result<()> {
     dbg!(&cli);
 
     let audio_file = if cli.normalize {
-        normalize(&cli.audio)?
+        normalize(&cli.audio_file)?
     } else {
-        cli.audio
+        cli.audio_file
     };
     let audio_data = read_wav(audio_file.as_path())?;
-    let text_segments = segments(&audio_data, cli.model.as_path())?;
+    let text_segments = segments(&audio_data, cli.model_file.as_path())?;
 
-    let mut text_buf: Box<dyn std::io::Write> = match cli.text {
+    let mut text_buf: Box<dyn std::io::Write> = match cli.text_file {
         None => Box::new(std::io::stdout().lock()),
         Some(ref path) => {
             let buf = std::fs::File::create(path)?;
