@@ -9,4 +9,4 @@ edition = "2021"
 anyhow = { version = "1.0.71", features = ["backtrace"] }
 clap = { version = "4.3.0", features = ["derive"] }
 hound = "3.5.0"
-whisper-rs = { git = "https://github.com/tazz4843/whisper-rs.git", version = "0.8.0" }
+whisper-rs = { version = "0.8.0" }
