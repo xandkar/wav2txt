@@ -1,4 +1,8 @@
-use std::path::{Path, PathBuf};
+use std::{
+    fs, io,
+    path::{Path, PathBuf},
+    process,
+};
 
 use anyhow::{anyhow, bail, Context, Result};
 
@@ -16,10 +20,10 @@ pub fn convert(
     let audio_data = read_wav(input_file.as_path())?;
     let text_segments = segments(&audio_data, model_file)?;
 
-    let mut text_buf: Box<dyn std::io::Write> = match output_file {
-        None => Box::new(std::io::stdout().lock()),
+    let mut text_buf: Box<dyn io::Write> = match output_file {
+        None => Box::new(io::stdout().lock()),
         Some(ref path) => {
-            let buf = std::fs::File::create(path)?;
+            let buf = fs::File::create(path)?;
             Box::new(buf)
         }
     };
@@ -30,7 +34,7 @@ pub fn convert(
 }
 
 fn exec(cmd: &str, args: &[&str]) -> Result<Vec<u8>> {
-    let out = std::process::Command::new(cmd).args(args).output()?;
+    let out = process::Command::new(cmd).args(args).output()?;
     if out.status.success() {
         Ok(out.stdout)
     } else {
