@@ -4,28 +4,9 @@ set -e
 
 main() {
     local -r data_dir='./data'
-    local -r models_dir="$data_dir"/models
     local -r audio_dir="$data_dir"/audio
     local -r audio_file_path="$audio_dir/audio.wav"
-
-    local -r model='base.en'
-    local -r model_file="ggml-${model}.bin"
-    local -r model_file_path="$models_dir/$model_file"
-    local -r model_url_src="https://huggingface.co/ggerganov/whisper.cpp"
-    local -r model_url_pfx="resolve/main/ggml"
-    local -r model_url="$model_url_src"/"$model_url_pfx"-"$model".bin
-
     local -r yt_url='https://youtu.be/CQbkhYg2DzM'
-
-    # Download the model:
-    mkdir -p "$models_dir"
-    wget \
-        --continue \
-        --no-config \
-        --quiet \
-        --show-progress \
-        -O "$model_file_path" \
-        "$model_url"
 
     # Download sample audio:
     mkdir -p "$audio_dir"
@@ -39,7 +20,6 @@ main() {
 
     # Convert audio to text:
     cargo run -- \
-        --model-file "$model_file_path" \
         --input-file "$audio_file_path" \
         --normalize  # Attempt to normalize the input to the supported format.
 }
