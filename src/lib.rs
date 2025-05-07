@@ -50,16 +50,9 @@ fn exec(cmd: &str, args: &[&str]) -> Result<Vec<u8>> {
     }
 }
 
-fn mktemp() -> Result<PathBuf> {
-    let out = exec("mktemp", &[])?;
-    let out = String::from_utf8(out)?;
-    let out = out.trim(); // Output contains a trailing LF.
-    Ok(PathBuf::from(out))
-}
-
 #[tracing::instrument]
 fn file_normalize(in_path: &Path) -> Result<PathBuf> {
-    let out_path = mktemp()?;
+    let out_path = tempfile::tempdir()?.into_path().join("normalized.wav");
 
     #[rustfmt::skip] // I mainly want each option-value pair on the same line.
     exec(

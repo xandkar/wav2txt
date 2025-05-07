@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = { version = "1.0.71", features = ["backtrace"] }
 clap = { version = "4.3.0", features = ["derive"] }
 hound = "3.5.0"
+tempfile = "3.19.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 whisper-rs = { version = "0.8.0" }
