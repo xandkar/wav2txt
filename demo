@@ -29,7 +29,7 @@ main() {
 
     # Download sample audio:
     mkdir -p "$audio_dir"
-    youtube-dl \
+    yt-dlp \
         --continue \
         --extract-audio \
         --audio-format wav \
@@ -39,8 +39,8 @@ main() {
 
     # Convert audio to text:
     cargo run -- \
-        --in-model "$model_file_path" \
-        --in-audio "$audio_file_path" \
+        --model-file "$model_file_path" \
+        --input-file "$audio_file_path" \
         --normalize  # Attempt to normalize the input to the supported format.
 }
 
