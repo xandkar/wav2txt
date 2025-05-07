@@ -6,6 +6,7 @@ use std::{
 
 use anyhow::{anyhow, bail, Context, Result};
 
+#[tracing::instrument(skip_all)]
 pub fn convert(
     input_file: &Path,
     output_file: Option<&Path>,
@@ -13,6 +14,7 @@ pub fn convert(
     normalize: bool,
 ) -> anyhow::Result<()> {
     let input_file = if normalize {
+        tracing::info!(?input_file, "Normalizing.");
         file_normalize(input_file)?
     } else {
         input_file.to_owned()
@@ -21,8 +23,12 @@ pub fn convert(
     let text_segments = segments(&audio_data, model_file)?;
 
     let mut text_buf: Box<dyn io::Write> = match output_file {
-        None => Box::new(io::stdout().lock()),
+        None => {
+            tracing::info!("Output to stdout.");
+            Box::new(io::stdout().lock())
+        }
         Some(ref path) => {
+            tracing::info!(?path, "Output to file.");
             let buf = fs::File::create(path)?;
             Box::new(buf)
         }
@@ -38,9 +44,8 @@ fn exec(cmd: &str, args: &[&str]) -> Result<Vec<u8>> {
     if out.status.success() {
         Ok(out.stdout)
     } else {
-        dbg!(cmd);
-        dbg!(args);
-        eprintln!("{}", String::from_utf8(out.stderr.clone())?);
+        let stderr = String::from_utf8(out.stderr.clone())?;
+        tracing::error!(?cmd, ?args, ?stderr, "Command failed to execute");
         Err(anyhow!("Failure in '{} {:?}'. out: {:?}", cmd, args, out))
     }
 }
@@ -52,6 +57,7 @@ fn mktemp() -> Result<PathBuf> {
     Ok(PathBuf::from(out))
 }
 
+#[tracing::instrument]
 fn file_normalize(in_path: &Path) -> Result<PathBuf> {
     let out_path = mktemp()?;
 
@@ -85,10 +91,11 @@ fn file_normalize(in_path: &Path) -> Result<PathBuf> {
     Ok(out_path)
 }
 
+#[tracing::instrument]
 fn read_wav(path: &Path) -> Result<Vec<f32>> {
     let mut wav_reader = hound::WavReader::open(path)?;
     let spec = wav_reader.spec();
-    dbg!(&spec);
+    tracing::debug!(?spec, "Constructed a hound wav reader.");
     let hound::WavSpec {
         channels: ch,
         sample_rate: rate,
@@ -143,6 +150,7 @@ fn read_wav(path: &Path) -> Result<Vec<f32>> {
     Ok(samples)
 }
 
+#[tracing::instrument(skip_all)]
 fn segments(data: &[f32], model: &Path) -> Result<Vec<String>> {
     let ctx = whisper_rs::WhisperContext::new(
         model.as_os_str().to_str().ok_or_else(|| {
