@@ -1,6 +1,6 @@
 [package]
 name = "wav2txt"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,5 +8,10 @@ edition = "2021"
 [dependencies]
 anyhow = { version = "1.0.71", features = ["backtrace"] }
 clap = { version = "4.3.0", features = ["derive"] }
+dirs = "6.0.0"
 hound = "3.5.0"
+reqwest = { version = "0.12.15", features = ["blocking"] }
+tempfile = "3.19.1"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 whisper-rs = { version = "0.8.0" }
