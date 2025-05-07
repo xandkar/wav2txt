@@ -19,9 +19,7 @@ main() {
         "$yt_url"
 
     # Convert audio to text:
-    cargo run -- \
-        --input-file "$audio_file_path" \
-        --normalize  # Attempt to normalize the input to the supported format.
+    cargo run -- --input-file "$audio_file_path"
 }
 
 main "$@"

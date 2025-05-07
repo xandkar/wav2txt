@@ -26,8 +26,9 @@ struct Cli {
     #[clap(short, long)]
     output_file: Option<PathBuf>,
 
-    #[clap(short, long)]
-    normalize: bool,
+    /// Disable audio normalization before conversion to text.
+    #[clap(short = 'N', long = "no-normalize")]
+    dont_normalize: bool,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -44,7 +45,7 @@ fn main() -> anyhow::Result<()> {
         &cli.input_file,
         cli.output_file.as_deref(),
         &model_file,
-        cli.normalize,
+        !cli.dont_normalize,
     )?;
     Ok(())
 }
