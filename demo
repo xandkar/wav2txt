@@ -19,7 +19,7 @@ main() {
         "$yt_url"
 
     # Convert audio to text:
-    cargo run -- --input-file "$audio_file_path"
+    cargo run "$audio_file_path"
 }
 
 main "$@"

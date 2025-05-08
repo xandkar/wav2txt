@@ -18,17 +18,16 @@ struct Cli {
     #[clap(short, long)]
     model_file: Option<PathBuf>,
 
-    /// Input audio file.
-    #[clap(short, long)]
-    input_file: PathBuf,
+    /// Disable audio normalization before conversion to text.
+    #[clap(short = 'N', long = "no-normalize")]
+    dont_normalize: bool,
 
     /// Output text file.
     #[clap(short, long)]
     output_file: Option<PathBuf>,
 
-    /// Disable audio normalization before conversion to text.
-    #[clap(short = 'N', long = "no-normalize")]
-    dont_normalize: bool,
+    /// Input audio file.
+    input_file: PathBuf,
 }
 
 fn main() -> anyhow::Result<()> {
