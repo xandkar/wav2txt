@@ -82,6 +82,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
+name = "aud2txt"
+version = "0.5.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dirs",
+ "hound",
+ "reqwest",
+ "tempfile",
+ "tracing",
+ "tracing-subscriber",
+ "whisper-rs",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1786,21 +1801,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "wav2txt"
-version = "0.4.0"
-dependencies = [
- "anyhow",
- "clap",
- "dirs",
- "hound",
- "reqwest",
- "tempfile",
- "tracing",
- "tracing-subscriber",
- "whisper-rs",
 ]
 
 [[package]]

@@ -41,7 +41,7 @@ fn main() -> anyhow::Result<()> {
         Some(path) => path,
         None => model_download()?,
     };
-    wav2txt::convert(
+    aud2txt::convert(
         &cli.input_file,
         cli.output_file.as_deref(),
         &model_file,
