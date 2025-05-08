@@ -40,6 +40,7 @@ pub fn convert(
 }
 
 fn exec(cmd: &str, args: &[&str]) -> Result<Vec<u8>> {
+    tracing::debug!(?cmd, ?args, "Executing command.");
     let out = process::Command::new(cmd).args(args).output()?;
     if out.status.success() {
         Ok(out.stdout)

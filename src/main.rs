@@ -12,7 +12,7 @@ macro_rules! crate_name {
 
 #[derive(Parser, Debug)]
 struct Cli {
-    #[clap(short, long = "log", default_value_t = LevelFilter::DEBUG)]
+    #[clap(short, long = "log", default_value_t = LevelFilter::ERROR)]
     log_level: LevelFilter,
 
     #[clap(short, long)]

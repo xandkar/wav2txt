@@ -2,8 +2,13 @@
 name = "aud2txt"
 version = "0.5.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Audio to text tool using ggerganov's whisper.cpp"
+repository = "https://github.com/xandkar/aud2txt"
+authors = ["Siraaj Khandkar <siraaj@khandkar.net>"]
+keywords = ["audio", "text", "llm", "whisper"]
+categories = ["command-line-utilities"]
+license-file = "LICENSE"
+readme = "README.md"
 
 [dependencies]
 anyhow = { version = "1.0.71", features = ["backtrace"] }
